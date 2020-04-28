@@ -6,7 +6,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public float Speed;
-    public readonly float AttackInterval = 0.5f;
+    public readonly float AttackInterval = 1.5f;
+    public float Health;
 
     private float m_AttackInterval;
     private RocketInfo m_PlayerRocketData;
@@ -42,7 +43,7 @@ public class Player : MonoBehaviour
         {
             SkinIndex = 0,
             Damage = 10,
-            Speed = 8,
+            Speed = 4,
             FromTags = GameTags.Player,
             Rotation = new Vector3(90,-90,0)
         };
@@ -78,5 +79,14 @@ public class Player : MonoBehaviour
         }
         rocketModel.SendMessage("SetInfo", JsonUtility.ToJson(m_PlayerRocketData));
         return rocketModel;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Enemy")
+        {
+            //碰到敌人自己瞬间暴毙
+            Destroy(gameObject);
+        }
     }
 }

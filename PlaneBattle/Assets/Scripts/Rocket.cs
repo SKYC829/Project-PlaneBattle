@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,6 +69,58 @@ public class Rocket : MonoBehaviour,ISendInfo
     }
 
     private void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        switch (other.tag)
+        {
+            case "Player":
+                VerifyHit_Player(other);
+                break;
+            case "Enemy":
+                VerifyHit_Enemy(other);
+                break;
+            //case "Rocket":
+            default:
+                VerifyHit_Rocket(other);
+                break;
+        }
+    }
+
+    private void VerifyHit_Rocket(Collider other)
+    {
+        //if(m_Data.FromTags == GameTags.Player && other.tag == "Enemy")
+        //{
+        //    //玩家可以击破敌人的子弹
+        //    Destroy(other.gameObject);
+        //}
+        Destroy(other.gameObject);
+        DestroySelf();
+    }
+
+    private void VerifyHit_Player(Collider other)
+    {
+        if (m_Data.FromTags != GameTags.Player)
+        {
+            DestroySelf();
+            //敌人对玩家一击必杀
+            Destroy(other.gameObject.transform.parent.gameObject);
+        }
+    }
+
+    private void VerifyHit_Enemy(Collider other)
+    {
+        if(m_Data.FromTags == GameTags.Player)
+        {
+            DestroySelf();
+            other.gameObject.transform.parent.gameObject.SendMessage("OnPlayerHit", m_Data);
+        }
+    }
+
+    private void DestroySelf()
     {
         Destroy(gameObject);
     }

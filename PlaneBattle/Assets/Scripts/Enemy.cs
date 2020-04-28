@@ -5,7 +5,8 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float Speed;
-    public readonly float AttackInterval = 0.45f;
+    public readonly float AttackInterval = 2.5f;
+    public float Health;
 
     private float m_AttackInterval;
     private RocketInfo m_EnemyRocketData;
@@ -39,6 +40,8 @@ public class Enemy : MonoBehaviour
         if(enemyModel != null)
         {
             enemyModel = Instantiate<GameObject>(enemyModel, transform);
+            enemyModel.AddComponent<BoxCollider>().isTrigger = true;
+            enemyModel.tag = tag;
             StartCoroutine(InitTexture(enemyModel));
             yield return enemyModel;
         }
@@ -91,10 +94,11 @@ public class Enemy : MonoBehaviour
             m_EnemyRocketData = new RocketInfo
             {
                 SkinIndex = 2,
-                Damage = 5,
-                Speed = -8,
+                Damage = 4,
+                Speed = -4,
                 FromTags = GameTags.Enemy,
-                Rotation = new Vector3(90, -90, 0)
+                Rotation = new Vector3(90, -90, 0),
+                FlipX = true
             };
         }
     }
@@ -143,6 +147,15 @@ public class Enemy : MonoBehaviour
     protected virtual void VerifyDestory()
     {
         if(IsActivited && !m_Renderer.isVisible)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public virtual void OnPlayerHit(RocketInfo vInfo)
+    {
+        Health -= vInfo.Damage;
+        if(Health <= 0)
         {
             Destroy(gameObject);
         }
