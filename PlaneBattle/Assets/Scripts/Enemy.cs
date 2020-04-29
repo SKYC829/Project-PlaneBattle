@@ -1,24 +1,31 @@
-﻿using System.Collections;
+﻿using PlaneBattle.Assets.Scripts;
+using PlaneBattle.Assets.Scripts.Models.GameObjectModels;
+using PlaneBattle.Assets.Scripts.Models.SystemBase;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float Speed;
-    public readonly float AttackInterval = 2.5f;
-    public float Health;
+    //public float Speed;
+    //public readonly float AttackInterval = 2.5f;
+    //public float Health;
 
     private float m_AttackInterval;
-    private RocketInfo m_EnemyRocketData;
-
+    //private RocketInfo m_EnemyRocketData;
+    protected EnemyInfo m_Data;
     protected bool IsActivited;
     protected Renderer m_Renderer;
     // Start is called before the first frame update
     void Start()
     {
+        SetInfo(GenerateEnemy());
         StartCoroutine(Init());
-        ChangeScale(new Vector3(0.1f, 0.1f, 0.1f));
-        InitRocketData();
+        ChangeScale(m_Data.Scale);
+        //InitRocketData();
     }
 
     // Update is called once per frame
@@ -36,16 +43,16 @@ public class Enemy : MonoBehaviour
     /// <returns></returns>
     protected virtual IEnumerator Init()
     {
-        GameObject enemyModel = Resources.Load<GameObject>("Models\\SpaceShips\\Enemy_01");
-        if(enemyModel != null)
+        GameObject enemyModel = Resources.Load<GameObject>($"Models\\SpaceShips\\Enemy_0{(int)m_Data.Level}");
+        if (enemyModel != null)
         {
             enemyModel = Instantiate<GameObject>(enemyModel, transform);
             enemyModel.AddComponent<BoxCollider>().isTrigger = true;
             enemyModel.tag = tag;
-            StartCoroutine(InitTexture(enemyModel));
-            yield return enemyModel;
+            StartCoroutine(InitTexture(gameObject));
         }
         m_Renderer = transform.GetComponent<Renderer>();
+        yield return enemyModel;
     }
 
     /// <summary>
@@ -56,23 +63,26 @@ public class Enemy : MonoBehaviour
     protected virtual IEnumerator InitTexture(GameObject enemyModel)
     {
         //设置材质
-        MeshRenderer renderer = enemyModel.GetComponentInChildren<MeshRenderer>();
-        //加载材质
-        Texture2D diffuseTexture = Resources.Load<Texture2D>("Images\\Textures\\SpaceShips\\Enemy_01_diffuse"); //主材质
-        Texture2D normalTexture = Resources.Load<Texture2D>("Images\\Textures\\SpaceShips\\Enemy_01_normal"); //我也不知道这算是什么图
-        Texture2D emissionTexture = Resources.Load<Texture2D>("Images\\Textures\\SpaceShips\\Enemy_01_emission"); //反射材质
-        Texture2D specularTexture = Resources.Load<Texture2D>("Images\\Textures\\SpaceShips\\Enemy_01_specular"); //光谱图
-        Material material = new Material(Shader.Find("Standard"));
-        yield return material;
-        material.SetTexture("_MainTex", diffuseTexture); //设置主材质
-        material.EnableKeyword("_NORMALMAP"); //启用NormalMap
-        material.SetTexture("_DetailNormalMap", normalTexture); //设置Normal材质
-        material.EnableKeyword("_EMISSION"); //启用反射材质
-        material.SetTexture("_EmissionMap", emissionTexture); //设置反射材质
-        material.SetColor("_EmissionColor", Color.white); //设置反射材质的颜色
-        material.EnableKeyword("_SPECGLOSSMAP"); //启用光谱图
-        material.SetTexture("_MetallicGlossMap", specularTexture); //设置光谱图
-        renderer.material = material;
+        MeshRenderer[] renderers = enemyModel.GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer renderer in renderers)
+        {
+            //加载材质
+            Texture2D diffuseTexture = Resources.Load<Texture2D>($"Images\\Textures\\SpaceShips\\Enemy_0{(int)m_Data.Level}_diffuse"); //主材质
+            Texture2D normalTexture = Resources.Load<Texture2D>($"Images\\Textures\\SpaceShips\\Enemy_0{(int)m_Data.Level}_normal"); //我也不知道这算是什么图
+            Texture2D emissionTexture = Resources.Load<Texture2D>($"Images\\Textures\\SpaceShips\\Enemy_0{(int)m_Data.Level}_emission"); //反射材质
+            Texture2D specularTexture = Resources.Load<Texture2D>($"Images\\Textures\\SpaceShips\\Enemy_0{(int)m_Data.Level}_specular"); //光谱图
+            Material material = new Material(Shader.Find("Standard"));
+            material.SetTexture("_MainTex", diffuseTexture); //设置主材质
+            material.EnableKeyword("_NORMALMAP"); //启用NormalMap
+            material.SetTexture("_DetailNormalMap", normalTexture); //设置Normal材质
+            material.EnableKeyword("_EMISSION"); //启用反射材质
+            material.SetTexture("_EmissionMap", emissionTexture); //设置反射材质
+            material.SetColor("_EmissionColor", Color.white); //设置反射材质的颜色
+            material.EnableKeyword("_SPECGLOSSMAP"); //启用光谱图
+            material.SetTexture("_MetallicGlossMap", specularTexture); //设置光谱图
+            renderer.material = material;
+        }
+        yield return renderers;
     }
 
     /// <summary>
@@ -89,9 +99,9 @@ public class Enemy : MonoBehaviour
     /// </summary>
     protected virtual void InitRocketData()
     {
-        if(m_EnemyRocketData == null)
+        if(m_Data.RocketData == null)
         {
-            m_EnemyRocketData = new RocketInfo
+            m_Data.RocketData = new RocketInfo
             {
                 SkinIndex = 2,
                 Damage = 4,
@@ -110,7 +120,7 @@ public class Enemy : MonoBehaviour
     {
         if(m_AttackInterval <= 0)
         {
-            m_AttackInterval = AttackInterval;
+            m_AttackInterval = m_Data.AttackInterval;
             CreateRocket();
         }
     }
@@ -126,7 +136,7 @@ public class Enemy : MonoBehaviour
         {
             rocketModel = Instantiate<GameObject>(rocketModel, transform.position, transform.rotation);
         }
-        rocketModel.SendMessage("SetInfo", JsonUtility.ToJson(m_EnemyRocketData));
+        rocketModel.SendMessage("SetInfo", JsonUtility.ToJson(m_Data.RocketData));
         return rocketModel;
     }
 
@@ -136,7 +146,7 @@ public class Enemy : MonoBehaviour
     protected virtual void VerifyMove()
     {
         float horizontalValue = Mathf.Sin(Time.time) * Time.deltaTime; //计算Speed和Time.time的Sin值，让水平坐标在1~-1中移动
-        transform.Translate(new Vector3(horizontalValue, 0, Speed * Time.deltaTime));
+        transform.Translate(new Vector3(horizontalValue, 0, m_Data.Speed * Time.deltaTime));
     }
 
     private void OnBecameVisible()
@@ -154,10 +164,56 @@ public class Enemy : MonoBehaviour
 
     public virtual void OnPlayerHit(RocketInfo vInfo)
     {
-        Health -= vInfo.Damage;
-        if(Health <= 0)
+        m_Data.Health -= vInfo.Damage;
+        if(m_Data.Health <= 0)
         {
             Destroy(gameObject);
         }
+    }
+
+    public void SetInfo(EnemyType level)
+    {
+        m_Data = JsonUtility.FromJson<EnemyInfo>(ReadEnemyInfo(level));
+    }
+
+    private string ReadEnemyInfo(EnemyType level)
+    {
+        m_Data = new EnemyInfo()
+        {
+            AttackInterval = 2.5f,
+            Health = 5,
+            Level = EnemyType.Normal,
+            Speed = 3,
+            Scale = new Vector3(0.1f,0.1f,0.1f)
+        };
+        InitRocketData();
+        string result = JsonUtility.ToJson(m_Data);
+        result = File.ReadAllText($"{Application.dataPath}\\Config\\Enemys\\Enemy_0{(int)level}.conf", Encoding.Default);
+        return result;
+    }
+
+    private EnemyType GenerateEnemy()
+    {
+        //初始化奖池
+        List<EnemyType> allEnemyType = new List<EnemyType>()
+        {
+            EnemyType.Normal,
+            EnemyType.Rare,
+            EnemyType.Epic,
+            EnemyType.Legend,
+            EnemyType.Boss
+        };
+        //初始化权重
+        List<double> weights = new List<double>()
+        {
+            10,//最简单的敌人生成率最大
+            6,//第二简单的敌人生成率略低
+            2,//困难敌人很少生成
+            0.05,//小Boss基本不生成
+            0.001,//大Boss堪比SSR
+        };
+        LotteryManager lottery = new LotteryManager(1); //每次只生成一个敌人
+        EnemyType[] results = lottery.ControlLottery<EnemyType>(new System.Random(), allEnemyType, weights);
+        return results[0];
     }
 }

@@ -350,7 +350,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 79}
     m_SelectedIDs: cc0e0000
     m_LastClickedID: 3788
-    m_ExpandedIDs: 00000000cc0e0000d60e0000d80e0000680f0000b20f0000c8100000e2100000e41300000a14000000ca9a3b
+    m_ExpandedIDs: 00000000cc0e0000d60e0000d80e0000680f0000b20f0000c8100000e2100000e41300000a140000b231000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -499,7 +499,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: c6fbffff
+      m_ExpandedIDs: 782affff822affff8e2cffffbe33ffffc833ffff8439ffff8e39ffff0051ffff2651ffff4c51ffff7251ffff9851ffffbe51ffffe451ffff0a52ffff3052ffff5e52ffff7852ffffee5cffff045dffff2a5dffff505dffff7e5dffff8e5dffff985dffff42ddffff5ce1ffffc0e9ffff7eedffffbafbffffc4fbffffc6fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -588,9 +588,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: -0.7071068, y: 0, z: 0, w: -0.7071068}
   m_Size:
-    m_Target: 22
+    m_Target: 21.01
     speed: 2
-    m_Value: 22
+    m_Value: 21.01
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -650,7 +650,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1

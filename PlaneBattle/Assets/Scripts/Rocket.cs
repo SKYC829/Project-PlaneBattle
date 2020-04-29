@@ -85,7 +85,7 @@ public class Rocket : MonoBehaviour,ISendInfo
                 break;
             //case "Rocket":
             default:
-                VerifyHit_Rocket(other);
+                //VerifyHit_Rocket(other);
                 break;
         }
     }
