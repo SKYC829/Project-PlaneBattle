@@ -28,7 +28,7 @@ public class Rocket : MonoBehaviour,ISendInfo
 
     private IEnumerator Init()
     {
-        Sprite[] sprites = Resources.LoadAll<Sprite>("Images\\Sequences");
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Images\\Sequences\\Rockets");
         SpriteRenderer renderer = transform.GetComponent<SpriteRenderer>();
         renderer.sprite = sprites[m_Data.SkinIndex];
         renderer.flipX = m_Data.FlipX;
@@ -116,12 +116,21 @@ public class Rocket : MonoBehaviour,ISendInfo
         if(m_Data.FromTags == GameTags.Player)
         {
             DestroySelf();
-            other.gameObject.transform.parent.gameObject.SendMessage("OnPlayerHit", m_Data);
+            //other.gameObject.transform.parent.gameObject.SendMessage("OnPlayerHit", m_Data);
+            other.SendMessageUpwards("OnPlayerHit", m_Data);
+            GameManager.Instance.AddScore(10);
         }
     }
 
     private void DestroySelf()
     {
+        //transform.GetComponent<Animation>().Play("Explode");
         Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        //transform.GetComponent<Animation>().enabled = true;
+        
     }
 }

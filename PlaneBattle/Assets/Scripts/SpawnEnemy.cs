@@ -6,27 +6,24 @@ using UnityEngine;
 
 public class SpawnEnemy : MonoBehaviour
 {
-    public float SpawnInterval = 30f;
-    private float m_SpawnInterval;
+    public bool IsStop;
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(Spawn());
     }
 
     // Update is called once per frame
     void Update()
     {
-        m_SpawnInterval -= Time.deltaTime;
-        StartCoroutine(Spawn());
+        VerifyMove();
     }
 
     private IEnumerator Spawn()
     {
-        if (m_SpawnInterval <= 0)
+        while (!IsStop)
         {
-            m_SpawnInterval = SpawnInterval;
-            //EnemyType EnemyIndex = GenerateEnemy();
+            yield return new WaitForSeconds(Random.Range(3, 6));
             GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs\\Enemy");
             if (enemyPrefab != null)
             {
@@ -35,6 +32,12 @@ public class SpawnEnemy : MonoBehaviour
                 yield return enemyPrefab;
             }
         }
+    }
+
+    private void VerifyMove()
+    {
+        float horizontal = Mathf.Sin(Time.time) * Time.deltaTime;
+        transform.Translate(horizontal, 0, 0);
     }
 
     private EnemyType GenerateEnemy()
@@ -60,5 +63,10 @@ public class SpawnEnemy : MonoBehaviour
         LotteryManager lottery = new LotteryManager(1); //每次只生成一个敌人
         EnemyType[] results = lottery.ControlLottery<EnemyType>(new System.Random(), allEnemyType, weights);
         return results[0];
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawIcon(transform.position, "Gizmos_Star");//用可视化辅助设置类标记出当前生成点的位置，便于观察
     }
 }

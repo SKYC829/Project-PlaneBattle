@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2214247024191754155}
   - component: {fileID: 2214247024191754156}
   - component: {fileID: 54211675663769606}
+  - component: {fileID: 111827595558228632}
   m_Layer: 0
   m_Name: PlayerPlane
   m_TagString: Player
@@ -62,3 +63,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 4
   m_CollisionDetection: 0
+--- !u!111 &111827595558228632
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214247024191754154}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 660b37860f81e4940a8683bf682f33c9, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 660b37860f81e4940a8683bf682f33c9, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0

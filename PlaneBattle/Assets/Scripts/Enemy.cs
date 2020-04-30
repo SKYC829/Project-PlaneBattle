@@ -216,4 +216,9 @@ public class Enemy : MonoBehaviour
         EnemyType[] results = lottery.ControlLottery<EnemyType>(new System.Random(), allEnemyType, weights);
         return results[0];
     }
+
+    private void OnDestroy()
+    {
+        //transform.GetComponent<Animation>().Play("An_Explode");
+    }
 }

@@ -89,4 +89,10 @@ public class Player : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.GameOver();
+        //transform.GetComponent<Animation>().Play("An_Explode");
+    }
 }
