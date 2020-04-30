@@ -49,7 +49,8 @@ public class Enemy : MonoBehaviour
             enemyModel = Instantiate<GameObject>(enemyModel, transform);
             enemyModel.AddComponent<BoxCollider>().isTrigger = true;
             enemyModel.tag = tag;
-            StartCoroutine(InitTexture(gameObject));
+            //StartCoroutine(InitTexture(gameObject));
+            InitTexture(gameObject);
         }
         m_Renderer = transform.GetComponent<Renderer>();
         yield return enemyModel;
@@ -60,7 +61,7 @@ public class Enemy : MonoBehaviour
     /// </summary>
     /// <param name="enemyModel"></param>
     /// <returns></returns>
-    protected virtual IEnumerator InitTexture(GameObject enemyModel)
+    protected virtual void InitTexture(GameObject enemyModel)
     {
         //设置材质
         MeshRenderer[] renderers = enemyModel.GetComponentsInChildren<MeshRenderer>();
@@ -82,7 +83,7 @@ public class Enemy : MonoBehaviour
             material.SetTexture("_MetallicGlossMap", specularTexture); //设置光谱图
             renderer.material = material;
         }
-        yield return renderers;
+        //yield return renderers;
     }
 
     /// <summary>
@@ -207,10 +208,10 @@ public class Enemy : MonoBehaviour
         List<double> weights = new List<double>()
         {
             10,//最简单的敌人生成率最大
-            6,//第二简单的敌人生成率略低
-            2,//困难敌人很少生成
-            0.05,//小Boss基本不生成
-            0.001,//大Boss堪比SSR
+            0,//第二简单的敌人生成率略低
+            0,//困难敌人很少生成
+            0,//小Boss基本不生成
+            0,//大Boss堪比SSR
         };
         LotteryManager lottery = new LotteryManager(1); //每次只生成一个敌人
         EnemyType[] results = lottery.ControlLottery<EnemyType>(new System.Random(), allEnemyType, weights);

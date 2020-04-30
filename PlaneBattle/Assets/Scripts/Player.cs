@@ -11,6 +11,9 @@ public class Player : MonoBehaviour
 
     private float m_AttackInterval;
     private RocketInfo m_PlayerRocketData;
+    public LayerMask m_MouseMask; //鼠标射线碰撞层
+
+    protected Vector3 m_TargetPos; //目标位置
     // Start is called before the first frame update
     void Start()
     {
@@ -22,10 +25,17 @@ public class Player : MonoBehaviour
     {
         //控制攻击间隔
         m_AttackInterval -= Time.deltaTime;
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         //检测移动
         VerifyMove();
         //检测攻击
         VerifyAttack();
+        VerifyPhoneAttack();
+        VerifyPhoneMove();
+#elif UNITY_ANDROID || UNITY_IPHONE
+        VerifyPhoneAttack();
+        VerifyPhoneMove();
+#endif
     }
 
     private IEnumerator Init()
@@ -47,6 +57,7 @@ public class Player : MonoBehaviour
             FromTags = GameTags.Player,
             Rotation = new Vector3(90,-90,0)
         };
+        m_TargetPos = transform.position;
     }
 
     private void VerifyMove()
@@ -67,6 +78,36 @@ public class Player : MonoBehaviour
         {
             m_AttackInterval = AttackInterval;
             GameObject rocket = CreateRocket();
+        }
+    }
+
+    private void VerifyPhoneMove()
+    {
+        if (Input.GetMouseButton(0))//手指点击了屏幕
+        {
+            Vector3 mousePos = Input.mousePosition; //获取鼠标位置
+            Ray ray = Camera.main.ScreenPointToRay(mousePos); //在摄像机上将鼠标坐标转为射线
+            bool iscast = Physics.Raycast(ray, out RaycastHit hitInfo, 1000000, m_MouseMask); //ray:转换后的射线
+                                                                                              //hitInfo:射线碰撞信息
+                                                                                              //1000:最大响应范围1000码
+                                                                                              //m_MouseMask:碰撞检测层
+            if (iscast) //如果射线与碰撞检测层发生碰撞
+            {
+                m_TargetPos = hitInfo.point; //将目标位置设置为碰撞位置
+                Vector3 nowPos = Vector3.MoveTowards(transform.position, m_TargetPos, Speed * Time.deltaTime); //计算当前位置与目标位置的某样东西
+
+                transform.position = nowPos; //更新当前物体位置
+            }
+
+        }
+    }
+
+    private void VerifyPhoneAttack()
+    {
+        if (Input.GetMouseButton(0) && m_AttackInterval <= 0)
+        {
+            m_AttackInterval = AttackInterval;
+            CreateRocket();
         }
     }
 

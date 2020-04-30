@@ -66,7 +66,14 @@ public class GameManager : MonoBehaviour
         {
             btn_Exit.onClick.AddListener(delegate ()
             {
-                SceneManager.LoadScene("GameTitle");
+                if(SceneManager.GetActiveScene().name == "GameTitle")
+                {
+                    Application.Quit();
+                }
+                else
+                {
+                    SceneManager.LoadScene("GameTitle");
+                }
             });
         }
         if (btn_Restart != null)
@@ -104,6 +111,9 @@ public class GameManager : MonoBehaviour
     {
         SpawnPoint.IsStop = true;
         Canvas_Main.gameObject.SetActive(false);
-        Canvas_GameOver.gameObject.SetActive(true);
+        if (Canvas_GameOver != null)
+        {
+            Canvas_GameOver.gameObject.SetActive(true);
+        }
     }
 }
